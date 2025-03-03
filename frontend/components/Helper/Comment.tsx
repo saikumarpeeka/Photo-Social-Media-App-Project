@@ -20,13 +20,12 @@ type Props = {
 
 const Comment = ({ post, user} : Props) => {
     const [comment, setComment] = useState("");
-     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const addCommentHandler = async(id:string) => {
       if (!comment) return;
       const addCommentReq = async () => await axios.post(`${BASE_API_URL}/posts/comment/${id}`, { text: comment }, { withCredentials: true });
   
-      const result = await handleAuthRequest(addCommentReq, setIsLoading);
+      const result = await handleAuthRequest(addCommentReq);
       if (result?.data.status == 'success') {
         dispatch(addComment({ postId: id, comment: result?.data.data.comment }));
         toast.success("Comment Posted");

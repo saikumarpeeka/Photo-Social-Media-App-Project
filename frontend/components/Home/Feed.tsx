@@ -28,68 +28,73 @@ const Feed = () => {
 
   useEffect(() => {
     const getAllPost = async () => {
-      const getAllPostReq = async () => await axios.get(`${BASE_API_URL}/posts/all`);
-      const result = await handleAuthRequest(getAllPostReq, setIsLoading);
-      if (result) {
+      try {
+        const result = await axios.get(`${BASE_API_URL}/posts/all`);
         dispatch(setPost(result?.data?.data?.posts));
+      } catch (error) {
+        console.error("Error fetching posts:", error);
       }
     };
     getAllPost();
   }, [dispatch]);
 
   const handleLikeDislike = async (id: string) => {
-    const result = await axios.post(`${BASE_API_URL}/posts/like-dislike/${id}`, {}, { withCredentials: true });
-
-    if (result.data.status === "success") {
-      if (user?._id) {
-        dispatch(likeOrDislike({ postId: id, userId: user?._id }));
-        toast(result?.data?.message);
+    try {
+      const result = await axios.post(`${BASE_API_URL}/posts/like-dislike/${id}`, {}, { withCredentials: true });
+      if (result.data.status === "success") {
+        if (user?._id) {
+          dispatch(likeOrDislike({ postId: id, userId: user?._id }));
+          toast(result?.data?.message);
+        }
       }
+    } catch (error) {
+      console.error("Error in like/dislike:", error);
     }
   }
 
   const handleSaveUnsave = async (id: string) => {
-    const result = await axios.post(`${BASE_API_URL}/posts/save-unsave-post/${id}`, {}, { withCredentials: true });
-
-    if (result.data.status == 'success') {
-      dispatch(setAuthUser(result?.data?.data?.user));
-      toast.success(result?.data?.message);
+    try {
+      const result = await axios.post(`${BASE_API_URL}/posts/save-unsave-post/${id}`, {}, { withCredentials: true });
+      if (result.data.status == 'success') {
+        dispatch(setAuthUser(result?.data?.data?.user));
+        toast.success(result?.data?.message);
+      }
+    } catch (error) {
+      console.error("Error saving post:", error);
     }
   }
 
   const handleComment = async (id: string) => {
     if (!comment) return;
-    const addCommentReq = async () => await axios.post(`${BASE_API_URL}/posts/comment/${id}`, { text: comment }, { withCredentials: true });
-
-    const result = await handleAuthRequest(addCommentReq, setIsLoading);
-    if (result?.data.status == 'success') {
-      dispatch(addComment({ postId: id, comment: result?.data.data.comment }));
-      toast.success("Comment Posted");
-      setComment("");
-      setActivePostId(null); 
+    try {
+      const result = await axios.post(`${BASE_API_URL}/posts/comment/${id}`, { text: comment }, { withCredentials: true });
+      if (result?.data.status == 'success') {
+        dispatch(addComment({ postId: id, comment: result?.data.data.comment }));
+        toast.success("Comment Posted");
+        setComment("");
+        setActivePostId(null); 
+      }
+    } catch (error) {
+      console.error("Error adding comment:", error);
     }
   };
 
   const handleShare = async (postId: string) => {
     const postUrl = `${window.location.origin}/post/${postId}`;
-
-    if (navigator.share) {
-      try {
+    try {
+      if (navigator.share) {
         await navigator.share({
           title: "Check out this post!",
           url: postUrl,
         });
         toast.success("Shared successfully!");
-      } catch (error) {
-        toast.error("Failed to share");
-      }
-    } else {
-      try {
+      } else {
         await navigator.clipboard.writeText(postUrl);
         toast.success("Link copied to clipboard!");
-      } catch (error) {
-        toast.error("Failed to copy link");
       }
+    } catch (error) {
+      toast.error("Failed to share");
+      console.error("Error sharing post:", error);
     }
   };
 
@@ -124,31 +129,6 @@ const Feed = () => {
           <div className="mt-2">
             <Image src={`${post.image?.url}`} alt="Post" width={400} height={400} className="w-full" />
           </div>
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <HeartIcon onClick={() => { handleLikeDislike(post?._id) }} className={`cursor-pointer ${user?._id && post.likes.includes(user?._id) ? 'text-red-700' : ""}`} fill={post.likes.includes(user?._id) ? "currentColor" : "none"} />
-              <MessageCircle onClick={() => { setActivePostId(activePostId === post._id ? null : post._id) }} className="cursor-pointer" />
-              <Send onClick={() => handleShare(post._id)} className="cursor-pointer" />
-            </div>
-            <Bookmark onClick={() => { handleSaveUnsave(post?._id); }} className={`cursor-pointer ${(user?.savedPosts as string[])?.some((savePostId: string) => savePostId === post._id) ? "text-rose-700" : ""}`} />
-          </div>
-          <h1 className="mt-2 text-sm font-semibold">
-            {post.likes.length} likes
-          </h1>
-          <p className="mt-2 font-medium">
-            {post.caption}
-          </p>
-
-          {activePostId === post._id && (
-            <div className="mt-2 flex items-center">
-              <input type="text" placeholder="Add a comment" className="flex-1 bg-blue-100 placeholder:text-gray-800 outline-none" value={comment} onChange={(e) => setComment(e.target.value)} />
-              <p role="button" className="text-sm font-semibold text-blue-700 cursor-pointer" onClick={() => { handleComment(post._id) }}>Post</p>
-            </div>
-          )}
-
-          {activePostId === post._id && <Comment post={post} user={user} />}
-
-          <div className="pb-6 "></div>
         </div>
       })}
     </div>
@@ -156,3 +136,4 @@ const Feed = () => {
 }
 
 export default Feed;
+

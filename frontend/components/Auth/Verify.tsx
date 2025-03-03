@@ -99,7 +99,7 @@ const Verify = () => {
             })}
         </div>
         <div className="flex items-center mt-4 space-x-2 ">
-            <h1 className="text-sm sm:text-lg font-medium text-gray-700">Didn't Get the otp code?{" "}</h1>
+            <h1 className="text-sm sm:text-lg font-medium text-gray-700">Didn&apos;t Get the otp code?{" "}</h1>
             <button onClick={handleResendOtp} className="text-sm sm:text-lg font-medium text-blue-900 underline">Resend Code</button>
         </div>
         <LoadingButton onClick={handleSubmit}  isLoading={isLoading} size={"lg"} className="mt-6 w-52 bg-blue-600 text-white">
