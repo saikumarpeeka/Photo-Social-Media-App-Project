@@ -9,12 +9,11 @@ import { useState } from "react";
 
 export const useFollowUnfollow = () => {
     const dispatch = useDispatch();
-     const [isLoading,setIsLoading] = useState(false);
 
     const handleFollowUnfollow = async(userId:string)=>{
         const followUnfollowReq = async() => await axios.post(`${BASE_API_URL}/users/follow-unfollow/${userId}`,{},{withCredentials:true});
 
-        const result = await handleAuthRequest(followUnfollowReq, setIsLoading);
+        const result = await handleAuthRequest(followUnfollowReq);
         if(result?.data.status=="success")
         dispatch(setAuthUser(result?.data.data.user));
         toast.success(result?.data.message);
