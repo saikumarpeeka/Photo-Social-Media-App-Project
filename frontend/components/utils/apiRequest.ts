@@ -5,7 +5,11 @@ interface ApiErrorResponse {
     message: string;
 }
 
-export const handleAuthRequest = async <T> (requestCallback:()=>Promise<T>,setLoading:(loading:boolean)=>void):Promise<T | null> => {
+
+export const handleAuthRequest = async <T> (
+    requestCallback:()=>Promise<T>, 
+    setLoading?: (loading:boolean) => void  
+): Promise<T | null> => {
     if(setLoading) setLoading(true);
 
     try {
@@ -18,7 +22,7 @@ export const handleAuthRequest = async <T> (requestCallback:()=>Promise<T>,setLo
             console.log(axiosError?.response?.data?.message);
             toast.error(axiosError?.response?.data?.message);
         } else {
-            toast.error("An unexpected error occured.");
+            toast.error("An unexpected error occurred.");
         }
         return null;
     } finally {

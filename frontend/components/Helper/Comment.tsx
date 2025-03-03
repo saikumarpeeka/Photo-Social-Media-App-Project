@@ -6,12 +6,12 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../ui/dialog'
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import DotButton from './DotButton';
-import { Button } from '../ui/button';
 import axios from 'axios';
 import { BASE_API_URL } from '@/server';
 import { handleAuthRequest } from '../utils/apiRequest';
 import { addComment } from '@/store/postSlice';
 import { toast } from 'sonner';
+import LoadingButton from './LoadingButton';
 
 type Props = {
     user: User | null;
@@ -20,12 +20,13 @@ type Props = {
 
 const Comment = ({ post, user} : Props) => {
     const [comment, setComment] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
     const addCommentHandler = async(id:string) => {
       if (!comment) return;
       const addCommentReq = async () => await axios.post(`${BASE_API_URL}/posts/comment/${id}`, { text: comment }, { withCredentials: true });
   
-      const result = await handleAuthRequest(addCommentReq);
+      const result = await handleAuthRequest(addCommentReq, setIsLoading);
       if (result?.data.status == 'success') {
         dispatch(addComment({ postId: id, comment: result?.data.data.comment }));
         toast.success("Comment Posted");
@@ -75,9 +76,8 @@ const Comment = ({ post, user} : Props) => {
             <div className="p-4">
               <div className="flex items-center gap-2">
                 <input type="text" value={comment} onChange={(e)=>setComment(e.target.value)} placeholder="Add a comment" className="w-full outline-none border text-sm border-gray-100 p-2 rounded bg-blue-100"/>
-                <Button onClick={()=>{
-                  if(post?._id) addCommentHandler(post?._id)
-                }} variant={"outline"} className="bg-blue-700 text-white">Send</Button>
+                <LoadingButton isLoading={isLoading} onClick={() => { if (post?._id) addCommentHandler(post?._id);}} className="bg-blue-700 text-white">Send</LoadingButton>
+
               </div>
             </div>
             </div>
