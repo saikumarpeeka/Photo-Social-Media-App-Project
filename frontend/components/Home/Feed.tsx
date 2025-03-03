@@ -128,7 +128,7 @@ const Feed = () => {
           </div>
           <div className="mt-3 flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <HeartIcon onClick={() => { handleLikeDislike(post?._id) }} className={`cursor-pointer ${user?._id && post.likes.includes(user?._id) ? 'text-red-700' : ""}`} fill={post.likes.includes(user?._id) ? "currentColor" : "none"} />
+              <HeartIcon onClick={() => { handleLikeDislike(post?._id) }} className={`cursor-pointer ${user?._id && post.likes.includes(user?._id) ? 'text-red-700' : ""}`}/>
               <MessageCircle onClick={() => { setActivePostId(activePostId === post._id ? null : post._id) }} className="cursor-pointer" />
               <Send onClick={() => handleShare(post._id)} className="cursor-pointer" />
             </div>
