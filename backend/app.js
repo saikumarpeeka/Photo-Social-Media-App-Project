@@ -20,15 +20,13 @@ app.use(helmet());
 
 app.use(
     cors({
-        origin:['http://localhost:3000',
-                'https://photo-social-media-app-project-zuww.vercel.app'
-               ],
+        origin:['https://photo-social-media-app-project-zuww.vercel.app'],
         credentials: true,
     })
 );
 
 app.use(express.static(path.join(__dirname, "public")));
-if(process.env.NODE_ENV === 'development') {
+if(process.env.NODE_ENV === 'production') {
     app.use(morgan("dev"));
 }
 
