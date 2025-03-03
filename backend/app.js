@@ -20,7 +20,9 @@ app.use(helmet());
 
 app.use(
     cors({
-        origin:['http://localhost:3000'],
+        origin:['http://localhost:3000',
+                'https://photo-social-media-app-project-zuww.vercel.app'
+               ],
         credentials: true,
     })
 );
